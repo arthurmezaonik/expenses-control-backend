@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.security.core.AuthenticationException;
 
 import java.nio.file.AccessDeniedException;
 import java.util.HashMap;
@@ -27,6 +28,12 @@ public class ErrorHandler {
     public ResponseEntity<ErrorResponseDto> handleNotFound(RuntimeException ex) {
         log.warn("Resource not found: {}", ex.getMessage());
         return buildError(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<ErrorResponseDto> handleAuthenticationFailure(AuthenticationException ex) {
+        log.warn("Authentication failed");
+        return buildError(HttpStatus.UNAUTHORIZED, "Email or password is incorrect");
     }
 
     @ExceptionHandler({

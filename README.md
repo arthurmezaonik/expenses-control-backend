@@ -10,10 +10,10 @@ Help someone understand their cash flow by recording transactions and viewing ac
 
 - Java backend exposed as a REST API.
 - Persistent storage so data survives app restarts.
-- One user, with no login or account system.
+- One configured user account with email and password login.
 - All amounts stored and displayed in GBP.
 - No bank connections, currency conversion, or AI features in the first version.
-- A frontend is deferred; API clients such as `curl` or Postman can be used during backend development.
+- A React frontend consumes the REST API using bearer tokens.
 
 ## User stories
 
@@ -50,6 +50,8 @@ All routes are under `/api`.
 
 | Method | Path | Purpose |
 | --- | --- | --- |
+| `POST` | `/auth/login` | Authenticate with email/password and receive a short-lived JWT access token |
+| `GET` | `/auth/me` | Return the current account; requires `Authorization: Bearer <token>` |
 | `POST` | `/transactions` | Create a transaction |
 | `GET` | `/transactions` | List transactions, newest first; supports optional `from`, `to`, and `includeInactive` filters |
 | `GET` | `/transactions/{id}` | Get one transaction |
@@ -116,7 +118,7 @@ The summary includes matching active transactions as well as totals. A future fr
 The parent workspace contains the Docker Compose setup for PostgreSQL, the Spring Boot API, and the React development server. See the workspace `README.md` for startup instructions.
 
 1. Find your computer's Wi-Fi IP address with `ipconfig getifaddr en0`.
-2. Copy `.env.example` to `.env` and set `LAN_HOST` to that IP. Replace the example database password and initial account details with your own values.
+2. Copy `.env.example` to `.env` and set `LAN_HOST` to that IP. Replace the example database password and initial account details with your own values. Generate `APP_JWT_SECRET` with `openssl rand -base64 32`.
 3. From this folder, run `docker compose up --build`.
 4. Open `http://<LAN_HOST>:5173` on your computer or a phone on the same Wi-Fi. The API is at `http://<LAN_HOST>:8080`.
 
